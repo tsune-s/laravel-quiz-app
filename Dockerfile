@@ -29,8 +29,9 @@ RUN cp .env.example .env
 # 権限を調整（任意）
 RUN chown -R www-data:www-data /var/www/html
 
-# ポートをExpose（Renderは自動認識する）
+# ポートをExpose（Renderは自動認識する。）
 EXPOSE 80
+
 
 # スタートコマンド（Apache起動）
 CMD ["apache2-foreground"]
