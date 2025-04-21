@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Quiz;
 use Illuminate\Http\Request;
 
 class QuizController extends Controller
@@ -13,7 +14,9 @@ class QuizController extends Controller
      */
     public function index()
     {
-        return view('quizzes.index');
+        return view('quizzes.index',[
+            'quizzes' => Quiz::all(),
+        ]);
     }
 
     /**
@@ -36,7 +39,7 @@ class QuizController extends Controller
     {
         // 入力内容のチェック
         // ルールに一致しない入力の場合は、自動的に入力画面を表示させる
-        $request->validate([
+        $validatedData = $request->validate([
             'question' => 'required|max:255',
             'answer_a' => 'required|max:255',
             'answer_b' => 'required|max:255',
@@ -46,7 +49,22 @@ class QuizController extends Controller
             'explanation' => 'max:65535',
         ]);
 
-        return view('quizzes.index');
+        // Modelを作成
+        $Quiz = new Quiz;
+        $Quiz->question = $validatedData['question'];
+        $Quiz->answer_a = $validatedData['answer_a'];
+        $Quiz->answer_b = $validatedData['answer_b'];
+        $Quiz->answer_c = $validatedData['answer_c'];
+        $Quiz->answer_d = $validatedData['answer_d'];
+        $Quiz->correct_answer = $validatedData['correct_answer'];
+        $Quiz->explanation = $validatedData['explanation'];
+
+        // ModelをDBに保存
+        $Quiz->save();
+
+        // 一覧ページを表示
+        // ※ リロードされたときに、もう一度データが保存されないようにリダイレクトさせる
+        return redirect(route('quizzes.index'));
     }
 
     /**
